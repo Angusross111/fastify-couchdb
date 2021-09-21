@@ -3,7 +3,7 @@ const fastify = require('fastify')()
 
 const COUCHDB_URL = 'http://localhost:5984'
 
-fastify.register(require('../index'), {url: COUCHDB_URL})
+fastify.register(require('../index'), { url: COUCHDB_URL })
 
 // Declare a route
 fastify.get('/', function (request, reply) {

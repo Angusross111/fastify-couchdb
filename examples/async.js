@@ -1,20 +1,34 @@
-const fastify = require('fastify')()
+import fastify from 'fastify'
+import fastifyCouchDB from '../index.js'
+const COUCHDB_URL = 'http://admin:password@localhost:5984'
 
-const COUCHDB_URL = 'http://localhost:5984'
+const server = fastify()
+server.register(fastifyCouchDB, { url: COUCHDB_URL })
 
-fastify.register(require('../index'), {url: COUCHDB_URL})
+server.get('/create', async (request, reply) => {
+  const response = await server.couch.db.create('alice')
+  reply.send({ ok: response.ok })
+})
 
-fastify.get('/', async (request, reply) => {
-  const { err, body } = await fastify.couch.db.list()
-  reply.send(err || { databases: body })
+server.get('/insert', async (request, reply) => {
+  const alice = server.couch.use('alice')
+  const response = await alice.insert({ happy: true }, 'rabbit')
+  reply.send({ ok: response.ok })
+})
+
+server.get('/get', async (request, reply) => {
+  const alice = server.couch.use('alice')
+  const doc = await alice.get('rabbit')
+  console.log(doc)
+  reply.send({ doc: doc })
 })
 
 const start = async () => {
   try {
-    await fastify.listen(3000)
+    await server.listen(3000)
     console.log('Listening on http://127.0.0.1:3000')
   } catch (err) {
-    fastify.log.error(err)
+    server.log.error(err)
     process.exit(1)
   }
 }

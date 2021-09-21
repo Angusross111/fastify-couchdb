@@ -1,35 +1,35 @@
 'use strict'
 
-const t = require('tap')
+import t from 'tap'
+import Fastify from 'fastify'
+import fastifyCouchDB from './index.js'
+import nano from 'nano'
 const test = t.test
-const Fastify = require('fastify')
-const fastifyCouchDB = require('./index')
-const nano = require('nano')
 
-const COUCHDB_URL = 'http://localhost:5984'
+const COUCHDB_URL = 'http://admin:password@localhost:5984'
 const TEST_DB = 'test'
 
 const couch = nano(COUCHDB_URL)
 
-t.beforeEach((done) => {
-  couch.db.create(TEST_DB, (err) => {
+t.beforeEach(() => {
+  couch.db.create(TEST_DB, (err, data) => {
     if (err && err.message !== 'The database could not be created, the file already exists.') {
       t.bailout('Cannot create test db: ' + err.message)
+    } else {
+      console.log(data)
     }
-    done()
   })
 })
 
-t.afterEach((done) => {
+t.afterEach(() => {
   couch.db.destroy(TEST_DB, (err) => {
     if (err && err.message !== 'Cannot delete test db: Database does not exist.') {
       t.bailout('Cannot delete test db: ' + err.message)
     }
-    done()
   })
 })
 
-test('fastify.couch namespace should exist', t => {
+test('fastify.couch namespace should exist', (t) => {
   const fastify = Fastify()
 
   fastify.register(fastifyCouchDB, {
@@ -44,50 +44,44 @@ test('fastify.couch namespace should exist', t => {
   })
 })
 
-test('should be able to connect and perform a query', t => {
+test('should be able to connect and perform a query', async (t) => {
   const fastify = Fastify()
 
   fastify.register(fastifyCouchDB, {
     url: COUCHDB_URL
   })
 
-  fastify.ready((err) => {
+  fastify.ready(async (err) => {
     t.error(err)
 
-    const mydb = fastify.couch.db.use(TEST_DB)
+    const mydb = fastify.couch.use(TEST_DB)
+    const response = await mydb.insert({ happy: true }, 'rabbit')
+    t.equal(response.id, 'rabbit')
+    t.equal(response.ok, 'true')
 
-    mydb.insert({ happy: true }, 'rabbit', (err, body) => {
-      t.error(err)
-      t.equal(body.id, 'rabbit')
-      t.equal(body.ok, true)
-
-      mydb.get('rabbit', (err, body) => {
-        t.error(err)
-        t.equal(body.happy, true)
-
-        fastify.close()
-        t.end()
-      })
-    })
+    const doc = await mydb.get('rabbit')
+    t.equal(doc.id, 'rabbit')
+    t.equal(doc.happy, true)
+    fastify.close()
+    t.end()
   })
 })
 
-test('should accept a default db to connect to', t => {
+test('should accept a default db to connect to', async (t) => {
   const fastify = Fastify()
 
   fastify.register(fastifyCouchDB, {
     url: `${COUCHDB_URL}/${TEST_DB}`
   })
 
-  fastify.ready((err) => {
+  fastify.ready(async (err) => {
     t.error(err)
-    fastify.couch.insert({ colour: 'white' }, 'rabbit', (err, body) => {
-      t.error(err)
-      t.equal(body.id, 'rabbit')
-      t.equal(body.ok, true)
+    const response = await fastify.couch.insert({ colour: 'white' }, 'rabbit')
+    t.error(err)
+    t.equal(response.id, 'rabbit')
+    t.equal(response.ok, true)
 
-      fastify.close()
-      t.end()
-    })
+    fastify.close()
+    t.end()
   })
 })

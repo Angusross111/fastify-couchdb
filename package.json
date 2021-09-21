@@ -1,37 +1,41 @@
 {
-  "name": "fastify-couchdb",
-  "version": "0.2.0",
-  "description": "Fastify CouchDB connection plugin",
-  "main": "index.js",
-  "scripts": {
-    "test": "standard --fix && tap test.js",
-    "couchdb": "docker run --rm -p 5984:5984 couchdb"
-  },
-  "keywords": [
-    "fastify",
-    "couch",
-    "couchdb",
-    "database",
-    "connection",
-    "apache"
-  ],
-  "author": "Nigel Hanlon <nigel.hanlon@nearform.com>",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/nigelhanlon/fastify-couchdb/issues"
-  },
-  "homepage": "https://github.com/nigelhanlon/fastify-couchdb#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nigelhanlon/fastify-couchdb.git"
-  },
-  "dependencies": {
-    "fastify-plugin": "^1.2.0",
-    "nano": "^7.0.0"
-  },
-  "devDependencies": {
-    "fastify": "^1.9.0",
-    "standard": "^11.0.1",
-    "tap": "^12.0.1"
-  }
+    "name": "fastify-couchdb",
+    "version": "0.2.0",
+    "description": "Fastify CouchDB connection plugin",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "test": "standard --fix && tap test.js && npm run typescript",
+        "typescript": "tsd",
+        "couchdb": "docker run --rm -p 5984:5984 couchdb"
+    },
+    "keywords": [
+        "fastify",
+        "couch",
+        "couchdb",
+        "database",
+        "connection",
+        "apache"
+    ],
+    "author": "Nigel Hanlon <nigel.hanlon@nearform.com>",
+    "license": "Apache-2.0",
+    "bugs": {
+        "url": "https://github.com/nigelhanlon/fastify-couchdb/issues"
+    },
+    "homepage": "https://github.com/nigelhanlon/fastify-couchdb#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nigelhanlon/fastify-couchdb.git"
+    },
+    "dependencies": {
+        "fastify-plugin": "^3.0.0",
+        "nano": "^9.0.5"
+    },
+    "devDependencies": {
+        "@types/node": "^16.9.6",
+        "fastify": "^3.21.3",
+        "standard": "^16.0.3",
+        "tap": "^15.0.9",
+        "tsd": "^0.17.0"
+    }
 }

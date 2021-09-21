@@ -1,7 +1,7 @@
 'use strict'
 
-const fp = require('fastify-plugin')
-const nano = require('nano')
+import fp from 'fastify-plugin'
+import nano from 'nano'
 
 function fastifyCouchDB (fastify, options, next) {
   const couch = nano(options)
@@ -9,7 +9,7 @@ function fastifyCouchDB (fastify, options, next) {
   next()
 }
 
-module.exports = fp(fastifyCouchDB, {
-  fastify: '>=1.1.0',
+export default fp(fastifyCouchDB, {
+  fastify: '>=3.21.0',
   name: 'fastify-couchdb'
 })
